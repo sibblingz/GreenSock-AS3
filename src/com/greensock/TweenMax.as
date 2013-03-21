@@ -543,7 +543,7 @@ package com.greensock {
 			TintPlugin,					//tweens tints
 			VisiblePlugin,				//tweens a target's "visible" property
 			VolumePlugin,				//tweens the volume of a MovieClip or SoundChannel or anything with a "soundTransform" property
-			BevelFilterPlugin,			//tweens BevelFilters
+//			BevelFilterPlugin,			//tweens BevelFilters
 			BezierPlugin,				//enables bezier tweening
 			BezierThroughPlugin,		//enables bezierThrough tweening
 			BlurFilterPlugin,			//tweens BlurFilters
@@ -817,7 +817,7 @@ tween.updateTo({x:300, y:0}, false);
 					_initted = false;
 				} else {
 					if (_notifyPluginsOfEnabled) if (_firstPT != null) {
-						_onPluginEvent("_onDisable", this); //in case a plugin like MotionBlur must perform some cleanup tasks
+						TweenLite._onPluginEvent("_onDisable", this); //in case a plugin like MotionBlur must perform some cleanup tasks
 					}
 					if (_time / _duration > 0.998) { //if the tween has finished (or come extremely close to finishing), we just need to rewind it to 0 and then render it again at the end which forces it to re-initialize (parsing the new vars). We allow tweens that are close to finishing (but haven't quite finished) to work this way too because otherwise, the values are so small when determining where to project the starting values that binary math issues creep in and can make the tween appear to render incorrectly when run backwards. 
 						var prevTime:Number = _time;
@@ -1220,7 +1220,7 @@ TweenMax.from([mc1, mc2, mc3], 1.5, {alpha:0});
 		 * @see com.greensock.TimelineLite#staggerFrom()
 		 */
 		public static function from(target:Object, duration:Number, vars:Object):TweenMax {
-			vars = _prepVars(vars, true);
+			vars = TweenLite._prepVars(vars, true);
 			vars.runBackwards = true;
 			return new TweenMax(target, duration, vars);
 		}
@@ -1272,8 +1272,8 @@ TweenMax.fromTo([mc1, mc2, mc3], 1, {x:0}, {x:100});
 		 * @see com.greensock.TimelineLite#staggerFromTo()
 		 */
 		public static function fromTo(target:Object, duration:Number, fromVars:Object, toVars:Object):TweenMax {
-			toVars = _prepVars(toVars, false);
-			fromVars = _prepVars(fromVars, false);
+			toVars = TweenLite._prepVars(toVars, false);
+			fromVars = TweenLite._prepVars(fromVars, false);
 			toVars.startAt = fromVars;
 			toVars.immediateRender = (toVars.immediateRender != false && fromVars.immediateRender != false);
 			return new TweenMax(target, duration, toVars);
@@ -1322,7 +1322,7 @@ TweenMax.staggerTo(textFields, 1, {y:"+150", ease:CubicIn.ease}, 0.2);
 		 * @see com.greensock.TimelineLite#staggerTo()
 		 */
 		public static function staggerTo(targets:Array, duration:Number, vars:Object, stagger:Number=0, onCompleteAll:Function=null, onCompleteAllParams:Array=null):Array {
-			vars = _prepVars(vars, false);
+			vars = TweenLite._prepVars(vars, false);
 			var a:Array = [],
 				l:int = targets.length,
 				delay:Number = vars.delay || 0,
@@ -1399,7 +1399,7 @@ TweenMax.staggerFrom(textFields, 1, {y:"+150"}, 0.2);
 		 * @see com.greensock.TimelineLite#staggerFrom()
 		 */
 		public static function staggerFrom(targets:Array, duration:Number, vars:Object, stagger:Number=0, onCompleteAll:Function=null, onCompleteAllParams:Array=null):Array {
-			vars = _prepVars(vars, true);
+			vars = TweenLite._prepVars(vars, true);
 			vars.runBackwards = true;
 			if (vars.immediateRender != false) {
 				vars.immediateRender = true;
@@ -1460,8 +1460,8 @@ TweenMax.staggerFromTo(textFields, 1, {alpha:1}, {alpha:0}, 0.2);
 		 * @see com.greensock.TimelineLite#staggerFromTo()
 		 */
 		public static function staggerFromTo(targets:Array, duration:Number, fromVars:Object, toVars:Object, stagger:Number=0, onCompleteAll:Function=null, onCompleteAllParams:Array=null):Array {
-			toVars = _prepVars(toVars, false);
-			fromVars = _prepVars(fromVars, false);
+			toVars = TweenLite._prepVars(toVars, false);
+			fromVars = TweenLite._prepVars(fromVars, false);
 			toVars.startAt = fromVars;
 			toVars.immediateRender = (toVars.immediateRender != false && fromVars.immediateRender != false);
 			return staggerTo(targets, duration, toVars, stagger, onCompleteAll, onCompleteAllParams);
@@ -1562,8 +1562,8 @@ TweenMax.set([obj1, obj2, obj3], {x:100, y:50, alpha:0});
 		 * @see com.greensock.TimelineLite#exportRoot()
 		 */
 		public static function getAllTweens(includeTimelines:Boolean=false):Array {
-			var a:Array = _getChildrenOf(_rootTimeline, includeTimelines);
-			return a.concat( _getChildrenOf(_rootFramesTimeline, includeTimelines) );
+			var a:Array = _getChildrenOf(Animation._rootTimeline, includeTimelines);
+			return a.concat( _getChildrenOf(Animation._rootFramesTimeline, includeTimelines) );
 		}
 		
 		/** @private **/
@@ -1755,7 +1755,7 @@ myTween.progress( 0.25 ); //sets progress to one quarter finished
 		 * @see #totalTime()
 		 **/
 		public function progress(value:Number=NaN):* {
-			return (!arguments.length) ? _time / duration() : totalTime( duration() * ((_yoyo && (_cycle & 1) !== 0) ? 1 - value : value) + (_cycle * (_duration + _repeatDelay)), false);
+			return (isNaN(value)) ? _time / duration() : totalTime( duration() * ((_yoyo && (_cycle & 1) !== 0) ? 1 - value : value) + (_cycle * (_duration + _repeatDelay)), false);
 		}
 		
 		/** 
@@ -1787,7 +1787,7 @@ myTween.totalProgress( 0.25 ); //sets total progress to one quarter finished
 		 * @see #totalTime()
 		 **/
 		public function totalProgress(value:Number=NaN):* {
-			return (!arguments.length) ? _totalTime / totalDuration() : totalTime( totalDuration() * value, false);
+			return (isNaN(value)) ? _totalTime / totalDuration() : totalTime( totalDuration() * value, false);
 		}
 		
 		/**
@@ -1823,7 +1823,7 @@ myTween.time(2); //sets time, jumping to new value just like seek().
 		 * @see #totalTime()
 		 **/
 		override public function time(value:Number=NaN, suppressEvents:Boolean=false):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return _time;
 			}
 			if (_dirty) {
@@ -1842,7 +1842,7 @@ myTween.time(2); //sets time, jumping to new value just like seek().
 		
 		/** @inheritDoc **/
 		override public function duration(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return this._duration; //don't set _dirty = false because there could be repeats that haven't been factored into the _totalDuration yet. Otherwise, if you create a repeated TweenMax and then immediately check its duration(), it would cache the value and the totalDuration would not be correct, thus repeats wouldn't take effect.
 			}
 			return super.duration(value);
@@ -1871,7 +1871,7 @@ myTween.totalDuration(10); //sets the total duration
 		 * @see #timeScale()
 		 **/
 		override public function totalDuration(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				if (_dirty) {
 					//instead of Infinity, we use 999999999999 so that we can accommodate reverses
 					_totalDuration = (_repeat == -1) ? 999999999999 : _duration * (_repeat + 1) + (_repeatDelay * _repeat);
@@ -1911,7 +1911,7 @@ myTween.repeat(2); //sets repeat to 2
 		 * @see #yoyo()
 		 **/
 		public function repeat(value:int=0):* {
-			if (!arguments.length) {
+			if (value === 0) {
 				return _repeat;
 			}
 			_repeat = value;
@@ -1945,7 +1945,7 @@ myTween.repeatDelay(2); //sets repeatDelay to 2
 		 * @see #yoyo()
 		 **/
 		public function repeatDelay(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return _repeatDelay;
 			}
 			_repeatDelay = value;
@@ -1982,7 +1982,7 @@ myAnimation.yoyo( true ); //sets yoyo to true
 		 * @see #repeatDelay()
 		 **/
 		public function yoyo(value:Boolean=false):* {
-			if (!arguments.length) {
+			if (value === false) {
 				return _yoyo;
 			}
 			_yoyo = value;
@@ -1991,20 +1991,20 @@ myAnimation.yoyo( true ); //sets yoyo to true
 		
 		/** @private [deprecated] Multiplier describing the speed of the root timelines where 1 is normal speed, 0.5 is half-speed, 2 is double speed, etc. The lowest globalTimeScale possible is 0.0001. Deprecated in favor of <code>TimelineLite.exportRoot()</code> **/
 		public static function globalTimeScale(value:Number=NaN):Number {
-			if (!arguments.length) {
-				return (_rootTimeline == null) ? 1 : _rootTimeline._timeScale;
+			if (isNaN(value)) {
+				return (Animation._rootTimeline == null) ? 1 : Animation._rootTimeline._timeScale;
 			}
 			value = value || 0.0001; //can't allow zero because it'll throw the math off
-			if (_rootTimeline == null) {
+			if (Animation._rootTimeline == null) {
 				TweenLite.to({}, 0, {}); //forces initialization in case globalTimeScale is set before any tweens are created.
 			}
-			var tl:SimpleTimeline = _rootTimeline,
+			var tl:SimpleTimeline = Animation._rootTimeline,
 				t:Number = (getTimer() / 1000);
 			tl._startTime = t - ((t - tl._startTime) * tl._timeScale / value);
-			tl = _rootFramesTimeline;
-			t = _rootFrame;
+			tl = Animation._rootFramesTimeline;
+			t = Animation._rootFrame;
 			tl._startTime = t - ((t - tl._startTime) * tl._timeScale / value);
-			_rootFramesTimeline._timeScale = _rootTimeline._timeScale = value;
+			Animation._rootFramesTimeline._timeScale = Animation._rootTimeline._timeScale = value;
 			return value;
 		}
 		

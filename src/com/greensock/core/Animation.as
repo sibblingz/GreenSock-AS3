@@ -653,7 +653,7 @@ myAnimation.eventCallback("onComplete", myFunction); //sets the onComplete
 		 * @return Omitting the parameter returns the current value (getter), whereas defining the parameter sets the value (setter) and returns the instance itself for easier chaining.
 		 **/
 		public function delay(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return _delay;
 			}
 			if (_timeline.smoothChildTiming) {
@@ -684,7 +684,7 @@ myAnimation.eventCallback("onComplete", myFunction); //sets the onComplete
 		 * @see #timeScale()
 		 **/
 		public function duration(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				_dirty = false;
 				return _duration;
 			}
@@ -718,7 +718,7 @@ myAnimation.eventCallback("onComplete", myFunction); //sets the onComplete
 		 **/
 		public function totalDuration(value:Number=NaN):* {
 			_dirty = false;
-			return (!arguments.length) ? _totalDuration : duration(value);
+			return (isNaN(value)) ? _totalDuration : duration(value);
 		}
 		
 		/**
@@ -750,7 +750,7 @@ myAnimation.time(2); //sets time, jumping to new value just like seek().
 		 * @see #totalTime()
 		 **/
 		public function time(value:Number=NaN, suppressEvents:Boolean=false):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return _time;
 			}
 			if (_dirty) {
@@ -798,7 +798,7 @@ myAnimation.time(2); //sets time, jumping to new value just like seek().
 		 * @see #pause()
 		 **/
 		public function totalTime(time:Number=NaN, suppressEvents:Boolean=false):* {
-			if (!arguments.length) {
+			if (isNaN(time)) {
 				return _totalTime;
 			}
 			if (_timeline) {
@@ -859,7 +859,7 @@ myAnimation.startTime(2); //sets the start time
 		 * @return Omitting the parameter returns the current value (getter), whereas defining the parameter sets the value (setter) and returns the instance itself for easier chaining.
 		 **/
 		public function startTime(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return _startTime;
 			}
 			if (value != _startTime) {
@@ -893,7 +893,7 @@ myAnimation.timeScale( 0.5 ); //sets timeScale to half-speed
 		 * @see #duration()
 		 **/
 		public function timeScale(value:Number=NaN):* {
-			if (!arguments.length) {
+			if (isNaN(value)) {
 				return _timeScale;
 			}
 			value = value || 0.000001; //can't allow zero because it'll throw the math off
@@ -929,7 +929,7 @@ myAnimation.reversed( !myAnimation.reversed() ); //toggles the orientation
 		 * @see #play()
 		 **/
 		public function reversed(value:Boolean=false):* {
-			if (!arguments.length) {
+			if (value === false) {
 				return _reversed;
 			}
 			if (value != _reversed) {
@@ -973,7 +973,7 @@ myAnimation.reversed( !myAnimation.reversed() ); //toggles the orientation
 		 * @see #play()
 		 **/
 		public function paused(value:Boolean=false):* {
-			if (!arguments.length) {
+			if (value === false) {
 				return _paused;
 			}
 			if (value != _paused) if (_timeline) {

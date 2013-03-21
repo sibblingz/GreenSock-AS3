@@ -1077,7 +1077,7 @@ TweenLite.set([obj1, obj2, obj3], {x:100, y:50, alpha:0});
 		
 		/** @private **/
 		private static function _dumpGarbage(event:Event):void {
-			if ((_rootFrame / 60) >> 0 === _rootFrame / 60) { //faster than !(_rootFrame % 60)
+			if ((Animation._rootFrame / 60) >> 0 === Animation._rootFrame / 60) { //faster than !(_rootFrame % 60)
 				var i:int, a:Array, tgt:Object;
 				for (tgt in _tweenLookup) {
 					a = _tweenLookup[tgt];
